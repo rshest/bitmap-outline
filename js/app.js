@@ -9,12 +9,18 @@ var Opt = function() {
 
   this.joinCorners = false;
   this.cornerRadius = 12;
-  this.outlineWidth = 2;
+  this.outlineWidth = 6;
   
   this.extrudeX = -10;
   this.extrudeY = -10;
   
   this.randomize = updateGridFull;
+  
+  this.outlineColor = "#150222";
+  this.insideColor = "#673a7f";
+  this.onColor = "#b0bab0";
+  this.offColor = "#e9f4e9";
+  this.gridColor = "#888";
 };
 
 var opt = new Opt();
@@ -62,8 +68,10 @@ function updateGrid() {
     .on("mousedown", toggleCell);
   
   svg.selectAll("rect")
-    .attr("class", function (d) {
-        return (d == 1) ? "cell_on" : "cell_off";});
+    .attr("class", "cell")
+    .attr("fill", function (d) {
+        return (d == 1) ? opt.onColor : opt.offColor;})
+    .attr("stroke", opt.gridColor);
 
   var contour = traceBitmap(bitmap, opt.gridWidth, opt.joinCorners);
 
@@ -79,6 +87,8 @@ function updateGrid() {
   
   svg.select("path")
     .attr("stroke-width", opt.outlineWidth)
+    .attr("stroke", opt.outlineColor)
+    .attr("fill", opt.insideColor)
     .attr("d", opt.trace ? path : ""); 
 }
 
@@ -110,7 +120,13 @@ function createGui() {
     gui.add(opt, 'outlineWidth', 0, 10).step(0.1).onChange(updateGrid);
     
     gui.add(opt, 'extrudeX', -50, 50).step(1).onChange(updateGrid);
-    gui.add(opt, 'extrudeY', -50, 50).step(1).onChange(updateGrid);  
+    gui.add(opt, 'extrudeY', -50, 50).step(1).onChange(updateGrid);
+      
+    gui.addColor(opt, 'outlineColor').onChange(updateGrid);
+    gui.addColor(opt, 'insideColor').onChange(updateGrid);
+    gui.addColor(opt, 'onColor').onChange(updateGrid);
+    gui.addColor(opt, 'offColor').onChange(updateGrid);
+    gui.addColor(opt, 'gridColor').onChange(updateGrid);
     
     gui.add(opt, 'randomize');  
 }
